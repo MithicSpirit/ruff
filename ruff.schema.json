@@ -67,7 +67,7 @@
       }
     },
     "extend-fixable": {
-      "description": "A list of rule codes or prefixes to consider autofixable, in addition to those specified by `fixable`.",
+      "description": "A list of rule codes or prefixes to consider fixable, in addition to those specified by `fixable`.",
       "type": [
         "array",
         "null"
@@ -120,7 +120,7 @@
       }
     },
     "fix": {
-      "description": "Enable autofix behavior by-default when running `ruff` (overridden by the `--fix` and `--no-fix` command-line flags).",
+      "description": "Enable fix behavior by-default when running `ruff` (overridden by the `--fix` and `--no-fix` command-line flags).",
       "type": [
         "boolean",
         "null"
@@ -134,7 +134,7 @@
       ]
     },
     "fixable": {
-      "description": "A list of rule codes or prefixes to consider autofixable. By default, all rules are considered autofixable.",
+      "description": "A list of rule codes or prefixes to consider fixable. By default, all rules are considered fixable.",
       "type": [
         "array",
         "null"
@@ -545,7 +545,7 @@
       }
     },
     "show-fixes": {
-      "description": "Whether to show an enumeration of all autofixed lint violations (overridden by the `--show-fixes` command-line flag).",
+      "description": "Whether to show an enumeration of all fixed lint violations (overridden by the `--show-fixes` command-line flag).",
       "type": [
         "boolean",
         "null"
@@ -611,7 +611,7 @@
       }
     },
     "unfixable": {
-      "description": "A list of rule codes or prefixes to consider non-autofix-able.",
+      "description": "A list of rule codes or prefixes to consider non-fixable.",
       "type": [
         "array",
         "null"

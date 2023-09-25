@@ -2,15 +2,15 @@ use std::cmp::Ordering;
 
 use num_bigint::{BigInt, Sign};
 
-use ruff_diagnostics::{AlwaysAutofixableViolation, Diagnostic, Edit, Fix};
+use ruff_diagnostics::{AlwaysFixableViolation, Diagnostic, Edit, Fix};
 use ruff_macros::{derive_message_formats, violation};
 use ruff_python_ast::stmt_if::{if_elif_branches, BranchKind, IfElifBranch};
 use ruff_python_ast::whitespace::indentation;
 use ruff_python_ast::{self as ast, CmpOp, Constant, ElifElseClause, Expr, StmtIf};
 use ruff_text_size::{Ranged, TextLen, TextRange};
 
-use crate::autofix::edits::delete_stmt;
 use crate::checkers::ast::Checker;
+use crate::fix::edits::delete_stmt;
 use crate::registry::AsRule;
 use crate::rules::pyupgrade::fixes::adjust_indentation;
 use crate::settings::types::PythonVersion;
@@ -49,13 +49,13 @@ use crate::settings::types::PythonVersion;
 #[violation]
 pub struct OutdatedVersionBlock;
 
-impl AlwaysAutofixableViolation for OutdatedVersionBlock {
+impl AlwaysFixableViolation for OutdatedVersionBlock {
     #[derive_message_formats]
     fn message(&self) -> String {
         format!("Version block is outdated for minimum Python version")
     }
 
-    fn autofix_title(&self) -> String {
+    fn fix_title(&self) -> String {
         "Remove outdated version block".to_string()
     }
 }

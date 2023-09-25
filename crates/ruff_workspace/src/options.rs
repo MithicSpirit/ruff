@@ -203,13 +203,13 @@ pub struct Options {
     )]
     pub extend_select: Option<Vec<RuleSelector>>,
 
-    /// A list of rule codes or prefixes to consider autofixable, in addition to those
+    /// A list of rule codes or prefixes to consider fixable, in addition to those
     /// specified by `fixable`.
     #[option(
         default = r#"[]"#,
         value_type = "list[RuleSelector]",
         example = r#"
-            # Enable autofix for flake8-bugbear (`B`), on top of any rules specified by `fixable`.
+            # Enable fix for flake8-bugbear (`B`), on top of any rules specified by `fixable`.
             extend-fixable = ["B"]
         "#
     )]
@@ -238,7 +238,7 @@ pub struct Options {
     )]
     pub external: Option<Vec<String>>,
 
-    /// Enable autofix behavior by-default when running `ruff` (overridden
+    /// Enable fix behavior by-default when running `ruff` (overridden
     /// by the `--fix` and `--no-fix` command-line flags).
     #[option(default = "false", value_type = "bool", example = "fix = true")]
     pub fix: Option<bool>,
@@ -247,13 +247,13 @@ pub struct Options {
     #[option(default = "false", value_type = "bool", example = "fix-only = true")]
     pub fix_only: Option<bool>,
 
-    /// A list of rule codes or prefixes to consider autofixable. By default,
-    /// all rules are considered autofixable.
+    /// A list of rule codes or prefixes to consider fixable. By default,
+    /// all rules are considered fixable.
     #[option(
         default = r#"["ALL"]"#,
         value_type = "list[RuleSelector]",
         example = r#"
-            # Only allow autofix behavior for `E` and `F` rules.
+            # Only allow fix behavior for `E` and `F` rules.
             fixable = ["E", "F"]
         "#
     )]
@@ -448,7 +448,7 @@ pub struct Options {
     )]
     pub show_source: Option<bool>,
 
-    /// Whether to show an enumeration of all autofixed lint violations
+    /// Whether to show an enumeration of all fixed lint violations
     /// (overridden by the `--show-fixes` command-line flag).
     #[option(
         default = "false",
@@ -570,12 +570,12 @@ pub struct Options {
     )]
     pub typing_modules: Option<Vec<String>>,
 
-    /// A list of rule codes or prefixes to consider non-autofix-able.
+    /// A list of rule codes or prefixes to consider non-fixable.
     #[option(
         default = "[]",
         value_type = "list[RuleSelector]",
         example = r#"
-            # Disable autofix for unused imports (`F401`).
+            # Disable fix for unused imports (`F401`).
             unfixable = ["F401"]
         "#
     )]
