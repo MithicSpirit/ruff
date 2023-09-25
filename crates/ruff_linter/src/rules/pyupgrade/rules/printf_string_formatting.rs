@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ruff_diagnostics::{Diagnostic, Edit, Fix, FixKind, Violation};
+use ruff_diagnostics::{Diagnostic, Edit, Fix, FixAvailability, Violation};
 use ruff_macros::{derive_message_formats, violation};
 use ruff_python_ast::str::{leading_quote, trailing_quote};
 use ruff_python_ast::whitespace::indentation;
@@ -44,7 +44,7 @@ use crate::rules::pyupgrade::helpers::curly_escape;
 pub struct PrintfStringFormatting;
 
 impl Violation for PrintfStringFormatting {
-    const FIX_KIND: FixKind = FixKind::Sometimes;
+    const FIX_CONFIDENCE: FixAvailability = FixAvailability::Sometimes;
 
     #[derive_message_formats]
     fn message(&self) -> String {
