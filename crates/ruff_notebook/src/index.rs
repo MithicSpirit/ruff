@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use ruff_source_file::{OneIndexed, SourceLocation};
+
 /// Jupyter Notebook indexing table
 ///
 /// When we lint a jupyter notebook, we have to translate the row/column based on
@@ -22,5 +24,17 @@ impl NotebookIndex {
     /// given row (1-based).
     pub fn cell_row(&self, row: usize) -> Option<u32> {
         self.row_to_row_in_cell.get(row).copied()
+    }
+
+    /// Translates the given source location based on the indexing table.
+    ///
+    /// This will translate the row/column in the concatenated source code
+    /// to the row/column in the Jupyter Notebook.
+    pub fn translated_location(&self, source_location: &SourceLocation) -> SourceLocation {
+        SourceLocation {
+            row: OneIndexed::new(self.cell_row(source_location.row.get()).unwrap_or(1) as usize)
+                .unwrap(),
+            column: source_location.column,
+        }
     }
 }
