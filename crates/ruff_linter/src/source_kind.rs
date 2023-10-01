@@ -1,9 +1,11 @@
+use std::io;
 use std::io::Write;
 
 use anyhow::Result;
+use thiserror::Error;
 
 use ruff_diagnostics::SourceMap;
-use ruff_notebook::Notebook;
+use ruff_notebook::{Notebook, NotebookError};
 
 #[derive(Clone, Debug, PartialEq, is_macro::Is)]
 pub enum SourceKind {
@@ -35,10 +37,18 @@ impl SourceKind {
     }
 
     /// Write the source kind to the given writer.
-    pub fn write(&self, writer: &mut dyn Write) -> Result<()> {
+    pub fn write(&self, writer: &mut dyn Write) -> Result<(), WriteError> {
         match self {
             SourceKind::Python(source) => writer.write_all(source.as_bytes()).map_err(Into::into),
             SourceKind::IpyNotebook(notebook) => notebook.write(writer).map_err(Into::into),
         }
     }
+}
+
+#[derive(Error, Debug)]
+pub enum WriteError {
+    #[error(transparent)]
+    Io(#[from] io::Error),
+    #[error(transparent)]
+    Notebook(#[from] NotebookError),
 }
