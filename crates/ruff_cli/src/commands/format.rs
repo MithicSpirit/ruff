@@ -15,7 +15,7 @@ use tracing::debug;
 use ruff_diagnostics::SourceMap;
 use ruff_linter::fs;
 use ruff_linter::logging::LogLevel;
-use ruff_linter::source_kind::{SourceKind, SourceReadError, SourceWriteError};
+use ruff_linter::source_kind::{SourceError, SourceKind};
 use ruff_linter::warn_user_once;
 use ruff_python_ast::{PySourceType, SourceType};
 use ruff_python_formatter::{format_module_source, FormatModuleError};
@@ -147,8 +147,13 @@ fn format_path(
     mode: FormatMode,
 ) -> Result<FormatCommandResult, FormatCommandError> {
     // Extract the sources from the file.
-    let source_kind = SourceKind::from_path(path, source_type)
-        .map_err(|err| FormatCommandError::Read(Some(path.to_path_buf()), err))?;
+    let source_kind = match SourceKind::from_path(path, source_type) {
+        Ok(Some(source_kind)) => source_kind,
+        Ok(None) => return Ok(FormatCommandResult::Unchanged),
+        Err(err) => {
+            return Err(FormatCommandError::Read(Some(path.to_path_buf()), err));
+        }
+    };
 
     // Format the source.
     if let Some(source_kind) = format_source(&source_kind, source_type, Some(path), settings)? {
@@ -328,9 +333,9 @@ impl Display for FormatResultSummary {
 pub(crate) enum FormatCommandError {
     Ignore(#[from] ignore::Error),
     Panic(Option<PathBuf>, PanicError),
-    Read(Option<PathBuf>, SourceReadError),
+    Read(Option<PathBuf>, SourceError),
     Format(Option<PathBuf>, FormatModuleError),
-    Write(Option<PathBuf>, SourceWriteError),
+    Write(Option<PathBuf>, SourceError),
 }
 
 impl Display for FormatCommandError {

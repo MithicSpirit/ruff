@@ -38,49 +38,53 @@ impl SourceKind {
         }
     }
 
-    /// Read the source kind from the given path.
-    pub fn from_path(path: &Path, source_type: PySourceType) -> Result<Self, SourceReadError> {
+    /// Read the [`SourceKind`] from the given path. Returns `None` if the source is not a Python
+    /// source file.
+    pub fn from_path(path: &Path, source_type: PySourceType) -> Result<Option<Self>, SourceError> {
         if source_type.is_ipynb() {
             let notebook = Notebook::from_path(path)?;
-            Ok(Self::IpyNotebook(notebook))
+            Ok(notebook
+                .is_python_notebook()
+                .then_some(Self::IpyNotebook(notebook)))
         } else {
             let contents = std::fs::read_to_string(path)?;
-            Ok(Self::Python(contents))
+            Ok(Some(Self::Python(contents)))
         }
     }
 
-    /// Read the source kind from the given source code.
+    /// Read the [`SourceKind`] from the given source code. Returns `None` if the source is not
+    /// Python source code.
     pub fn from_source_code(
         source_code: String,
         source_type: PySourceType,
-    ) -> Result<Self, SourceReadError> {
+    ) -> Result<Option<Self>, SourceError> {
         if source_type.is_ipynb() {
             let notebook = Notebook::from_source_code(&source_code)?;
-            Ok(Self::IpyNotebook(notebook))
+            Ok(notebook
+                .is_python_notebook()
+                .then_some(Self::IpyNotebook(notebook)))
         } else {
-            Ok(Self::Python(source_code))
+            Ok(Some(Self::Python(source_code)))
         }
     }
 
-    /// Write the source kind to the given writer.
-    pub fn write(&self, writer: &mut dyn Write) -> Result<(), SourceWriteError> {
+    /// Write the [`SourceKind`] to the given writer.
+    pub fn write(&self, writer: &mut dyn Write) -> Result<(), SourceError> {
         match self {
-            SourceKind::Python(source) => writer.write_all(source.as_bytes()).map_err(Into::into),
-            SourceKind::IpyNotebook(notebook) => notebook.write(writer).map_err(Into::into),
+            SourceKind::Python(source) => {
+                writer.write_all(source.as_bytes())?;
+                Ok(())
+            }
+            SourceKind::IpyNotebook(notebook) => {
+                notebook.write(writer)?;
+                Ok(())
+            }
         }
     }
 }
 
 #[derive(Error, Debug)]
-pub enum SourceReadError {
-    #[error(transparent)]
-    Io(#[from] io::Error),
-    #[error(transparent)]
-    Notebook(#[from] NotebookError),
-}
-
-#[derive(Error, Debug)]
-pub enum SourceWriteError {
+pub enum SourceError {
     #[error(transparent)]
     Io(#[from] io::Error),
     #[error(transparent)]
